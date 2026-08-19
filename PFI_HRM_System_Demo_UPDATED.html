@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PFI HRM System — Full Module Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --purple:#B8912C;
+    --purple-dark:#8A6A1D;
+    --blue:#2563EB;
+    --blue-light:#EAF2FF;
+    --gold-bg:#F3E4C0;
+    --gold-icon:#A97C1E;
+    --green-bg:#D1FAE5;
+    --green:#16A34A;
+    --orange-bg:#FEF3C7;
+    --orange:#B45309;
+    --red-bg:#FEE2E2;
+    --red:#DC2626;
+    --blue-bg:#DBEAFE;
+    --pink-bg:#FCE7F3;
+    --pink:#DB2777;
+    --text:#1F2937;
+    --muted:#6B7280;
+    --border:#E5E7EB;
+    --bg:#F5F6F8;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
+  .app{display:flex;flex-direction:column;height:100vh;}
+  .topbar{background:linear-gradient(90deg,var(--purple-dark),var(--purple));color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;flex-shrink:0;}
+  .topbar-left{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;}
+  .topbar-left .app-name{opacity:.95;}
+  .topbar-left .app-sub{opacity:.75;font-weight:400;font-size:13px;}
+  .topbar-right{display:flex;align-items:center;gap:14px;}
+  .topbar-right .avatar{width:28px;height:28px;border-radius:50%;background:#fff;color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+  .badge-demo{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);font-size:11px;padding:3px 9px;border-radius:20px;}
+  .body-row{display:flex;flex:1;min-height:0;}
+  .sidebar{width:230px;background:#fff;border-right:1px solid var(--border);padding:14px 10px;overflow-y:auto;flex-shrink:0;}
+  .brand{display:flex;align-items:center;gap:8px;padding:6px 8px 16px 8px;}
+  .brand .logo{width:30px;height:30px;border-radius:8px;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+  .brand .name{font-weight:700;font-size:16px;}
+  .section-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;margin:14px 10px 6px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--text);margin-bottom:2px;}
+  .nav-item:hover{background:#F7F5FA;}
+  .nav-item.active{background:var(--blue-light);color:var(--blue);font-weight:600;}
+  .nav-item .icn{width:24px;height:24px;border-radius:6px;background:var(--gold-bg);color:var(--gold-icon);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .nav-item.active .icn{background:var(--blue);color:#fff;}
+  .sub-nav{margin-left:26px;border-left:2px solid var(--border);padding-left:12px;margin-bottom:4px;}
+  .sub-item{padding:7px 6px;font-size:12.5px;color:var(--muted);cursor:pointer;border-radius:6px;display:flex;align-items:center;gap:8px;}
+  .sub-item:hover{color:var(--text);}
+  .sub-item.active{color:var(--blue);font-weight:600;}
+  .sub-item .dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;}
+  .sub-item.active .dot{background:var(--blue);}
+  .main{flex:1;overflow-y:auto;padding:22px 28px;}
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .crumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;}
+  .crumb b{color:var(--text);font-size:15px;}
+  .h1{font-size:22px;font-weight:700;margin:2px 0 4px;}
+  .sub{color:var(--muted);font-size:13.5px;}
+  .btn{border:none;border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .btn-primary{background:var(--blue);color:#fff;}
+  .btn-primary:hover{background:#1d4fd1;}
+  .btn-outline{background:#fff;color:var(--text);border:1px solid var(--border);}
+  .btn-outline:hover{background:#F7F7F8;}
+  .btn-row{display:flex;gap:10px;}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+  .card .label{font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--muted);text-transform:uppercase;}
+  .card .icon-circle{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .card .num{font-size:28px;font-weight:800;margin:6px 0 2px;}
+  .card .delta{font-size:12px;font-weight:600;}
+  .delta.up{color:var(--green);}
+  .delta.down{color:var(--red);}
+  .delta span{color:var(--muted);font-weight:400;margin-left:2px;}
+  .panel{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px;}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .panel-title{font-size:16px;font-weight:700;}
+  .link{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;}
+  .filters{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .filters input,.filters select{border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12.5px;background:#fafafa;min-width:120px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;padding:10px 12px;border-bottom:1px solid var(--border);}
+  td{padding:12px 12px;border-bottom:1px solid #F0F0F1;}
+  tr:last-child td{border-bottom:none;}
+  .pill{padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:700;display:inline-block;}
+  .pill.green{background:var(--green-bg);color:var(--green);}
+  .pill.orange{background:var(--orange-bg);color:var(--orange);}
+  .pill.red{background:var(--red-bg);color:var(--red);}
+  .pill.blue{background:var(--blue-bg);color:var(--blue);}
+  .pill.gray{background:#F1F1F3;color:var(--muted);}
+  .avatar-name{display:flex;align-items:center;gap:8px;}
+  .avatar-sm{width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .field label{font-size:12.5px;font-weight:600;color:var(--text);}
+  .field input,.field select,.field textarea{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;background:#fafafa;font-family:inherit;}
+  .field textarea{resize:vertical;min-height:70px;}
+  .field.full{grid-column:1/-1;}
+  .upload-box{border:1.5px dashed var(--border);border-radius:10px;padding:22px;text-align:center;color:var(--muted);font-size:13px;background:#FAFAFA;}
+  .upload-box b{color:var(--blue);cursor:pointer;}
+  .profile-head{display:flex;gap:18px;align-items:center;margin-bottom:18px;}
+  .profile-photo{width:76px;height:76px;border-radius:16px;background:var(--purple);color:#fff;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .profile-name{font-size:19px;font-weight:700;}
+  .profile-role{color:var(--muted);font-size:13.5px;margin-top:2px;}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+  .tab{padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;}
+  .tab.active{color:var(--blue);border-color:var(--blue);}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .info-item .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px;}
+  .info-item .v{font-size:13.5px;font-weight:600;}
+  .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .kanban-col{background:#FAFAFA;border-radius:12px;padding:12px;border:1px solid var(--border);}
+  .kanban-col h4{font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);margin:2px 0 10px;display:flex;justify-content:space-between;}
+  .kcard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12.5px;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+  .kcard .kname{font-weight:700;margin-bottom:3px;}
+  .kcard .kmeta{color:var(--muted);font-size:11.5px;}
+  .progress-bar{height:6px;background:#EEE;border-radius:4px;overflow:hidden;margin-top:6px;}
+  .progress-bar > div{height:100%;background:var(--blue);}
+  .row-actions{display:flex;gap:8px;}
+  .row-actions a{color:var(--muted);font-size:12.5px;cursor:pointer;text-decoration:underline;}
+  .doc-icon{width:34px;height:34px;border-radius:8px;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
+  .stars{color:#F59E0B;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div>البريد للاستثمار — <span class="app-name">PFI HRM</span></div>
+      <span class="app-sub">Full System Concept Demo</span>
+    </div>
+    <div class="topbar-right">
+      <span class="badge-demo">Prototype — for scope review</span>
+      <div class="avatar">MM</div>
+    </div>
+  </div>
+  <div class="body-row">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="main" id="main"></div>
+  </div>
+</div>
+
+<script>
+const employees = [
+  {id:1,name:"Manar Mansour",dept:"Technology",role:"Product Owner",status:"Active",join:"12-03-2022",email:"manar.mansour@pfi.com"},
+  {id:2,name:"Ahmed Al-Sayed",dept:"Finance",role:"Financial Analyst",status:"Active",join:"04-07-2021",email:"ahmed.alsayed@pfi.com"},
+  {id:3,name:"Lina Kareem",dept:"Human Resources",role:"HR Specialist",status:"Active",join:"19-01-2023",email:"lina.kareem@pfi.com"},
+  {id:4,name:"Omar Farouk",dept:"Operations",role:"Ops Manager",status:"On Leave",join:"22-09-2020",email:"omar.farouk@pfi.com"},
+  {id:5,name:"Sara Nabil",dept:"Marketing",role:"Marketing Lead",status:"Active",join:"08-11-2022",email:"sara.nabil@pfi.com"},
+  {id:6,name:"Youssef Adel",dept:"Technology",role:"Software Engineer",status:"Inactive",join:"30-05-2019",email:"youssef.adel@pfi.com"},
+];
+
+const attendance = [
+  {emp:"Manar Mansour",date:"13-08-2026",in:"08:58 AM",out:"05:04 PM",status:"On Time",hrs:"8.1"},
+  {emp:"Ahmed Al-Sayed",date:"13-08-2026",in:"09:22 AM",out:"05:10 PM",status:"Late",hrs:"7.8"},
+  {emp:"Lina Kareem",date:"13-08-2026",in:"—",out:"—",status:"Absent",hrs:"0"},
+  {emp:"Omar Farouk",date:"13-08-2026",in:"—",out:"—",status:"On Leave",hrs:"0"},
+  {emp:"Sara Nabil",date:"13-08-2026",in:"08:50 AM",out:"04:58 PM",status:"On Time",hrs:"8.1"},
+];
+
+const candidates = {
+  applied:[{n:"Rana Fathy",r:"UX Designer",d:"2d ago"},{n:"Karim Zaki",r:"Backend Dev",d:"1d ago"}],
+  screening:[{n:"Dina Samir",r:"HR Specialist",d:"4d ago"}],
+  interview:[{n:"Tarek Nabil",r:"Backend Dev",d:"6d ago"},{n:"Nourhan Adel",r:"Accountant",d:"3d ago"}],
+  offer:[{n:"Hana Fouad",r:"UX Designer",d:"9d ago"}],
+};
+
+const reviews = [
+  {emp:"Manar Mansour",period:"H1 2026",score:4.6,manager:"S. Rady",status:"Completed"},
+  {emp:"Ahmed Al-Sayed",period:"H1 2026",score:3.9,manager:"M. Hosny",status:"Completed"},
+  {emp:"Lina Kareem",period:"H1 2026",score:0,manager:"M. Hosny",status:"Pending"},
+  {emp:"Omar Farouk",period:"H1 2026",score:4.2,manager:"S. Rady",status:"Completed"},
+  {emp:"Sara Nabil",period:"H1 2026",score:0,manager:"A. Younes",status:"In Progress"},
+];
+
+const courses = [
+  {name:"Workplace Compliance 2026",cat:"Compliance",enrolled:42,progress:100,status:"Completed"},
+  {name:"Advanced Excel for Finance",cat:"Skills",enrolled:18,progress:65,status:"In Progress"},
+  {name:"Leadership Fundamentals",cat:"Leadership",enrolled:12,progress:30,status:"In Progress"},
+  {name:"Cybersecurity Awareness",cat:"Compliance",enrolled:55,progress:100,status:"Completed"},
+  {name:"New Hire Onboarding",cat:"Onboarding",enrolled:6,progress:10,status:"In Progress"},
+];
+
+const documents = [
+  {name:"Employment Contract - Manar Mansour.pdf",type:"Contract",emp:"Manar Mansour",date:"12-03-2022",status:"Verified"},
+  {name:"National ID - Ahmed Al-Sayed.pdf",type:"ID",emp:"Ahmed Al-Sayed",date:"04-07-2021",status:"Verified"},
+  {name:"Degree Certificate - Sara Nabil.pdf",type:"Certificate",emp:"Sara Nabil",date:"08-11-2022",status:"Pending Review"},
+  {name:"NDA - Youssef Adel.pdf",type:"Legal",emp:"Youssef Adel",date:"30-05-2019",status:"Verified"},
+  {name:"Medical Insurance Form - Lina Kareem.pdf",type:"Insurance",emp:"Lina Kareem",date:"19-01-2023",status:"Missing Signature"},
+];
+
+const leaves = [
+  {id:4,status:"Approved",who:"Manar Mansour",from:"26-08-2026",to:"05-09-2026",type:"Annual"},
+  {id:5,status:"Approved",who:"Manar Mansour",from:"13-08-2026",to:"15-08-2026",type:"Sick"},
+  {id:6,status:"Approved",who:"Manar Mansour",from:"16-08-2026",to:"21-08-2026",type:"Annual"},
+  {id:7,status:"Pending",who:"Ahmed Al-Sayed",from:"01-09-2026",to:"03-09-2026",type:"Casual"},
+];
+
+// ---------- nav config ----------
+const NAV = [
+  {key:"home", label:"Home", icon:"⌂"},
+  {group:"CORE"},
+  {key:"employees", label:"Employee Mgmt.", icon:"👤", subs:[
+    {key:"employees-list", label:"Employee List"},
+    {key:"employees-profile", label:"Employee Profile"},
+    {key:"employees-add", label:"Add / Edit Employee"},
+  ]},
+  {key:"leaves", label:"Leaves Mgmt.", icon:"📅", subs:[
+    {key:"leaves-dash", label:"Leave Dashboard"},
+    {key:"leaves-list", label:"Leave List"},
+    {key:"leaves-new", label:"New Leave"},
+  ]},
+  {group:"TALENT & DEVELOPMENT"},
+  {key:"recruitment", label:"Recruitment", icon:"💼", subs:[
+    {key:"recruitment-pipeline", label:"Recruitment Dashboard"},
+    {key:"recruitment-candidate", label:"Requisition Details"},
+    {key:"recruitment-add", label:"Submit Requisition"},
+  ]},
+  {key:"performance", label:"Performance Mgmt.", icon:"⭐", subs:[
+    {key:"performance-dash", label:"Performance Dashboard"},
+    {key:"performance-list", label:"Review Cycle"},
+    {key:"performance-add", label:"New Evaluation"},
+  ]},
+  {key:"training", label:"Training Mgmt.", icon:"🎓", subs:[
+    {key:"training-list", label:"Training Dashboard"},
+    {key:"training-detail", label:"Request Details"},
+    {key:"training-add", label:"Submit Request"},
+  ]},
+  {group:"COMPLIANCE"},
+  {key:"documents", label:"Company Documents", icon:"📋", subs:[
+    {key:"documents-list", label:"Policies & Procedures"},
+    {key:"documents-detail", label:"Document Detail"},
+    {key:"documents-add", label:"Add Document"},
+  ]},
+];
+
+let state = {page:"home"};
+
+function renderSidebar(){
+  const el = document.getElementById("sidebar");
+  el.innerHTML = "";
+  const brand = document.createElement("div");
+  brand.className = "brand";
+  brand.innerHTML = `<div class="logo">HR</div><div class="name">HRM</div>`;
+  el.appendChild(brand);
+
+  NAV.forEach(item=>{
+    if(item.group){
+      const g = document.createElement("div");
+      g.className="section-label"; g.textContent=item.group;
+      el.appendChild(g);
+      return;
+    }
+    const active = state.page===item.key || (item.subs && item.subs.some(s=>s.key===state.page));
+    const nav = document.createElement("div");
+    nav.className = "nav-item"+(active?" active":"");
+    nav.innerHTML = `<span class="icn">${item.icon}</span><span>${item.label}</span>`;
+    nav.onclick = ()=>{ go(item.subs ? item.subs[0].key : item.key); };
+    el.appendChild(nav);
+    if(item.subs && active){
+      const sub = document.createElement("div");
+      sub.className="sub-nav";
+      item.subs.forEach(s=>{
+        const si = document.createElement("div");
+        si.className = "sub-item"+(state.page===s.key?" active":"");
+        si.innerHTML = `<span class="dot"></span><span>${s.label}</span>`;
+        si.onclick = (e)=>{ e.stopPropagation(); go(s.key); };
+        sub.appendChild(si);
+      });
+      el.appendChild(sub);
+    }
+  });
+}
+
+function go(page){ state.page = page; render(); window.scrollTo(0,0); }
+
+function render(){
+  renderSidebar();
+  const main = document.getElementById("main");
+  main.innerHTML = PAGES[state.page] ? PAGES[state.page]() : `<div class="panel">Screen not built yet.</div>`;
+}
+
+// ---------- helpers ----------
+function cardsHTML(cards){
+  return `<div class="cards">${cards.map(c=>`
+    <div class="card">
+      <div class="icon-circle" style="background:${c.bg};color:${c.fg}">${c.icon}</div>
+      <div class="label">${c.label}</div>
+      <div class="num">${c.num}</div>
+      <div class="delta ${c.dir}">${c.dir==="up"?"↑":"↓"} ${c.delta} <span>${c.deltaLabel||""}</span></div>
+    </div>`).join("")}</div>`;
+}
+function header(crumbTrail,title,sub,actions){
+  return `<div class="page-header">
+    <div>
+      <div class="crumb">${crumbTrail}</div>
+      <div class="h1">${title}</div>
+      ${sub?`<div class="sub">${sub}</div>`:""}
+    </div>
+    <div class="btn-row">${actions||""}</div>
+  </div>`;
+}
+function initials(name){ return name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+
+// ---------- PAGES ----------
+const PAGES = {};
+
+PAGES.home = ()=>`
+  ${header("HRM System","Welcome back, Manar 👋","Here's a snapshot of the whole HR system across all modules.")}
+  ${cardsHTML([
+    {label:"Total Employees",num:employees.length,icon:"👤",bg:"var(--blue-bg)",fg:"var(--blue)",dir:"up",delta:"+2",deltaLabel:"this month"},
+    {label:"Open Positions",num:4,icon:"🧑‍💼",bg:"var(--gold-bg)",fg:"var(--gold-icon)",dir:"up",delta:"+1"},
+    {label:"Pending Leave Requests",num:1,icon:"📅",bg:"var(--orange-bg)",fg:"var(--orange)",dir:"down",delta:"-2"},
+    {label:"Trainings In Progress",num:3,icon:"🎓",bg:"var(--green-bg)",fg:"var(--green)",dir:"up",delta:"+1"},
+  ])}
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Modules Overview</div><span class="link">Recruitment, Performance, Training & Company Documents modules</span></div>
+    <table>
+      <tr><th>Module</th><th>Status</th><th>Description</th><th></th></tr>
+      <tr><td><b>Employee Management</b></td><td><span class="pill green">Active</span></td><td>${employees.length} employees</td><td><a class="link" onclick="go('employees-list')">Open →</a></td></tr>
+      <tr><td><b>Leaves Management</b></td><td><span class="pill green">Active</span></td><td>${leaves.length} requests</td><td><a class="link" onclick="go('leaves-dash')">Open →</a></td></tr>
+      <tr><td><b>Recruitment</b></td><td><span class="pill blue">Updated</span></td><td>4 active requisitions</td><td><a class="link" onclick="go('recruitment-pipeline')">Open →</a></td></tr>
+      <tr><td><b>Performance Management</b></td><td><span class="pill blue">Updated</span></td><td>Annual P.C. cycle</td><td><a class="link" onclick="go('performance-dash')">Open →</a></td></tr>
+      <tr><td><b>Training Management</b></td><td><span class="pill blue">Updated</span></td><td>3 training requests</td><td><a class="link" onclick="go('training-list')">Open →</a></td></tr>
+      <tr><td><b>Company Documents</b></td><td><span class="pill blue">New</span></td><td>8 policies & procedures</td><td><a class="link" onclick="go('documents-list')">Open →</a></td></tr>
+    </table>
+  </div>`;
+
+// ---- Employee Mgmt ----
+PAGES["employees-list"] = ()=>`
+  ${header("Employee Mgmt.","Employee List","All employees across the organization.",
+    `<button class="btn btn-primary" onclick="go('employees-add')">+ Add Employee</button>`)}
+  <div class="panel">
+    <div class="filters">
+      <input placeholder="Search by name...">
+      <select><option>Filter by department</option></select>
+      <select><option>Filter by status</option></select>
+    </div>
+    <table>
+      <tr><th>Employee</th><th>Department</th><th>Position</th><th>Status</th><th>Join Date</th><th></th></tr>
+      ${employees.map(e=>`
+      <tr>
+        <td><div class="avatar-name"><div class="avatar-sm">${initials(e.name)}</div>${e.name}</div></td>
+        <td>${e.dept}</td>
+        <td>${e.role}</td>
+        <td><span class="pill ${e.status==="Active"?"green":e.status==="On Leave"?"orange":"gray"}">${e.status}</span></td>
+        <td>${e.join}</td>
+        <td class="row-actions"><a onclick="go('employees-profile')">View</a><a onclick="go('employees-add')">Edit</a></td>
+      </tr>`).join("")}
+    </table>
+  </div>`;
+
+PAGES["employees-profile"] = ()=>{
+  const e = employees[0];
+  return `
+  ${header("Employee Mgmt. / Profile", e.name, e.role,
+    `<button class="btn btn-outline" onclick="go('employees-list')">← Back to List</button>
+     <button class="btn btn-primary" onclick="go('employees-add')">Edit</button>`)}
+  <div class="panel">
+    <div class="profile-head">
+      <div class="profile-photo">${initials(e.name)}</div>
+      <div>
+        <div class="profile-name">${e.name}</div>
+        <div class="profile-role">${e.role} · ${e.dept}</div>
+        <span class="pill green">${e.status}</span>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active">Overview</div>
+      <div class="tab">Leaves</div>
+      <div class="tab">Attendance</div>
+      <div class="tab">Performance</div>
+      <div class="tab">Documents</div>
+    </div>
+    <div class="info-grid">
+      <div class="info-item"><div class="k">Employee ID</div><div class="v">EMP-00${e.id}</div></div>
+      <div class="info-item"><div class="k">Email</div><div class="v">${e.email}</div></div>
+      <div class="info-item"><div class="k">Join Date</div><div class="v">${e.join}</div></div>
+      <div class="info-item"><div class="k">Department</div><div class="v">${e.dept}</div></div>
+      <div class="info-item"><div class="k">Manager</div><div class="v">S. Rady</div></div>
+      <div class="info-item"><div class="k">Employment Type</div><div class="v">Full-time</div></div>
+      <div class="info-item"><div class="k">Phone</div><div class="v">+20 100 123 4567</div></div>
+      <div class="info-item"><div class="k">Location</div><div class="v">Cairo, Egypt</div></div>
+      <div class="info-item"><div class="k">Annual Leave Balance</div><div class="v">17 days</div></div>
+    </div>
+  </div>`;
+};
+
+PAGES["employees-add"] = ()=>`
+  ${header("Employee Mgmt. / Add", "Add / Edit Employee", "",
+    `<button class="btn btn-outline" onclick="go('employees-list')">Cancel</button>
+     <button class="btn btn-primary" onclick="go('employees-list')">Save Employee</button>`)}
+  <div class="panel">
+    <div class="form-grid">
+      <div class="field"><label>Full Name</label><input placeholder="e.g. Sara Nabil"></div>
+      <div class="field"><label>Employee ID</label><input placeholder="Auto-generated"></div>
+      <div class="field"><label>Department</label><select><option>Technology</option><option>Finance</option><option>Human Resources</option><option>Operations</option><option>Marketing</option></select></div>
+      <div class="field"><label>Position / Title</label><input placeholder="e.g. Product Owner"></div>
+      <div class="field"><label>Employment Type</label><select><option>Full-time</option><option>Part-time</option><option>Contract</option></select></div>
+      <div class="field"><label>Manager</label><select><option>Find items</option></select></div>
+      <div class="field"><label>Join Date</label><input type="date"></div>
+      <div class="field"><label>Status</label><select><option>Active</option><option>On Leave</option><option>Inactive</option></select></div>
+      <div class="field"><label>Email</label><input placeholder="name@pfi.com"></div>
+      <div class="field"><label>Phone</label><input placeholder="+20 1xx xxx xxxx"></div>
+      <div class="field full"><label>Notes</label><textarea placeholder="Enter text"></textarea></div>
+      <div class="field full"><label>Profile Photo / Attachments</label>
+        <div class="upload-box">There is nothing attached. <b>+ Attach file</b></div>
+      </div>
+    </div>
+  </div>`;
+
+// ---- Leaves Mgmt (kept consistent with visualized screens) ----
+PAGES["leaves-dash"] = ()=>`
+  ${header("Leaves Mgmt.","Leave Dashboard","Welcome back, Manar Mansour. Here's your leaves current status.",
+    `<button class="btn btn-primary" onclick="go('leaves-new')">+ New Leave</button>`)}
+  ${cardsHTML([
+    {label:"Approved Annual Leaves",num:17,icon:"🏖",bg:"var(--blue-bg)",fg:"var(--blue)",dir:"up",delta:"+4",deltaLabel:"Remaining"},
+    {label:"Approved Casual Leaves",num:16,icon:"☕",bg:"var(--gold-bg)",fg:"var(--gold-icon)",dir:"down",delta:"-10",deltaLabel:"Remaining"},
+    {label:"Approved Sick Leaves",num:3,icon:"❤",bg:"var(--green-bg)",fg:"var(--green)",dir:"up",delta:"+12",deltaLabel:"Remaining"},
+    {label:"Approved Edu. Leaves",num:0,icon:"🎓",bg:"var(--pink-bg)",fg:"var(--pink)",dir:"up",delta:"+10",deltaLabel:"Remaining"},
+  ])}
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Previous Leaves</div><span class="link" onclick="go('leaves-list')">View All →</span></div>
+    <table>
+      <tr><th>ID</th><th>Status</th><th>Assignee</th><th>From Date</th><th>To Date</th><th>Type</th></tr>
+      ${leaves.map(l=>`<tr><td>${l.id}</td><td><span class="pill ${l.status==="Approved"?"green":"orange"}">${l.status}</span></td><td>${l.who}</td><td>${l.from}</td><td>${l.to}</td><td><span class="pill blue">${l.type}</span></td></tr>`).join("")}
+    </table>
+  </div>`;
+
+PAGES["leaves-list"] = ()=>`
+  ${header("Leaves Mgmt.","Leave List","",`<button class="btn btn-primary" onclick="go('leaves-new')">+ New Leave</button>`)}
+  <div class="panel">
+    <div class="filters">
+      <input placeholder="Search by approver...">
+      <select><option>Filter by type</option></select>
+      <select><option>Filter by status</option></select>
+    </div>
+    <table>
+      <tr><th>ID</th><th>Status</th><th>Assignee</th><th>From</th><th>To</th><th>Type</th></tr>
+      ${leaves.map(l=>`<tr><td>${l.id}</td><td><span class="pill ${l.status==="Approved"?"green":"orange"}">${l.status}</span></td><td>${l.who}</td><td>${l.from}</td><td>${l.to}</td><td><span class="pill blue">${l.type}</span></td></tr>`).join("")}
+    </table>
+  </div>`;
+
+PAGES["leaves-new"] = ()=>`
+  ${header("Leaves Mgmt.","New Leave","",`<button class="btn btn-outline" onclick="go('leaves-list')">Cancel</button><button class="btn btn-primary" onclick="go('leaves-list')">Submit</button>`)}
+  <div class="panel">
+    <div class="form-grid">
+      <div class="field"><label>Leave Type</label><select><option>Find items</option><option>Annual</option><option>Sick</option><option>Casual</option><option>Educational</option></select></div>
+      <div class="field"><label>Number of Days</label><input value="1"></div>
+      <div class="field"><label>From Date</label><input type="date"></div>
+      <div class="field"><label>To Date</label><input type="date"></div>
+      <div class="field full"><label>Notes</label><textarea placeholder="Enter text"></textarea></div>
+      <div class="field full"><label>Attachments</label><div class="upload-box">There is nothing attached. <b>+ Attach file</b></div></div>
+    </div>
+  </div>`;
+
+// ---- Attendance ----
+// ---- Recruitment ----
+PAGES["recruitment-pipeline"] = ()=>`
+  ${header("Recruitment Dashboard","Recruitment Requisitions & Approvals","Track hiring requests through approval workflow stages",
+    `<button class="btn btn-primary" onclick="go('recruitment-add')">+ New Requisition</button>`)}
+  ${cardsHTML([
+    {label:"Total Active Requests",num:4,icon:"💼",bg:"var(--blue-bg)",fg:"var(--blue)",dir:"up",delta:"+2"},
+    {label:"Approved & Active",num:4,icon:"✔",bg:"var(--green-bg)",fg:"var(--green)",dir:"up",delta:"+1"},
+    {label:"In Screening/Sourcing",num:1,icon:"🔍",bg:"var(--orange-bg)",fg:"var(--orange)",dir:"up",delta:"+1"},
+    {label:"Interviewing Stage",num:2,icon:"📞",bg:"var(--pink-bg)",fg:"var(--pink)",dir:"up",delta:"+1"},
+  ])}
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Recruitment Requests (No. of Requisitions)</div></div>
+    <div class="filters">
+      <input placeholder="Search by role or manager...">
+      <select><option>Filter by Status</option><option>Sourcing</option><option>Screening</option><option>Interviewing</option><option>Offer</option><option>Closed</option></select>
+      <select><option>Filter by Type</option><option>New</option><option>Replacement</option></select>
+    </div>
+    <table>
+      <tr><th>Position</th><th>Dept.</th><th>Type</th><th>Hiring Manager</th><th>Location</th><th>Status</th><th>Progress</th><th></th></tr>
+      <tr><td><b>Senior Analyst</b></td><td>Finance</td><td><span class="pill blue">New</span></td><td>Ahmed Hassan</td><td>Cairo</td><td><span class="pill blue">Sourcing</span></td><td style="font-size:12px">3 in screening</td><td class="row-actions"><a onclick="go('recruitment-candidate')">View</a></td></tr>
+      <tr><td><b>UX Designer</b></td><td>Technology</td><td><span class="pill blue">New</span></td><td>Fatima Karim</td><td>Cairo</td><td><span class="pill orange">Interviewing</span></td><td style="font-size:12px">2 final</td><td class="row-actions"><a onclick="go('recruitment-candidate')">View</a></td></tr>
+      <tr><td><b>Operations Manager</b></td><td>Operations</td><td><span class="pill orange">Replacement</span></td><td>Omar Saleh</td><td>Giza</td><td><span class="pill orange">Interviewing</span></td><td style="font-size:12px">1 shortlisted</td><td class="row-actions"><a onclick="go('recruitment-candidate')">View</a></td></tr>
+      <tr><td><b>Marketing Executive</b></td><td>Marketing</td><td><span class="pill blue">New</span></td><td>Noor Atallah</td><td>Cairo</td><td><span class="pill green">Offer</span></td><td style="font-size:12px">Pending acceptance</td><td class="row-actions"><a onclick="go('recruitment-candidate')">View</a></td></tr>
+    </table>
+  </div>`;
+
+PAGES["recruitment-candidate"] = ()=>`
+  ${header("Recruitment / Requisition","Senior Analyst Position","Finance · New Requisition",
+    `<button class="btn btn-outline" onclick="go('recruitment-pipeline')">← Back</button>
+     <button class="btn btn-primary">Update Status</button>`)}
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Request Details</div>
+    <div class="info-grid">
+      <div class="info-item"><div class="k">Position</div><div class="v">Senior Analyst</div></div>
+      <div class="info-item"><div class="k">Type</div><div class="v"><span class="pill blue">New</span></div></div>
+      <div class="info-item"><div class="k">Department</div><div class="v">Finance</div></div>
+      <div class="info-item"><div class="k">Hiring Manager</div><div class="v">Ahmed Hassan</div></div>
+      <div class="info-item"><div class="k">Location</div><div class="v">Cairo</div></div>
+      <div class="info-item"><div class="k">Budget</div><div class="v">$65,000</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Approval & Workflow Status</div>
+    <table>
+      <tr><th>Workflow Stage</th><th>Status</th><th>Owner / Responsible</th><th>Date</th></tr>
+      <tr><td><b>Department Head Approval</b></td><td><span class="pill green">Approved</span></td><td>Finance Manager</td><td>13-Oct-2024</td></tr>
+      <tr><td><b>Sourcing & Screening</b></td><td><span class="pill blue">In Progress</span></td><td>HR Team</td><td>—</td></tr>
+      <tr><td><b>Interviewing Stage</b></td><td><span class="pill gray">Pending</span></td><td>Hiring Manager</td><td>—</td></tr>
+      <tr><td><b>Offer & Closure</b></td><td><span class="pill gray">Pending</span></td><td>HR / Manager</td><td>—</td></tr>
+    </table>
+  </div>`;
+
+PAGES["recruitment-add"] = ()=>`
+  ${header("Recruitment","Submit New Requisition","Request approval for new or replacement position",`<button class="btn btn-outline" onclick="go('recruitment-pipeline')">Cancel</button><button class="btn btn-primary" onclick="go('recruitment-pipeline')">Submit Request</button>`)}
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Requisition Details</div>
+    <div class="form-grid">
+      <div class="field"><label>Position Title</label><input placeholder="e.g. Senior Analyst"></div>
+      <div class="field"><label>Request Type</label><select><option>New Position</option><option>Replacement</option></select></div>
+      <div class="field"><label>Department</label><select><option>Technology</option><option>Finance</option><option>Human Resources</option><option>Operations</option><option>Marketing</option></select></div>
+      <div class="field"><label>Hiring Manager</label><select><option>Find items</option></select></div>
+      <div class="field"><label>Location</label><input placeholder="e.g. Cairo, Giza"></div>
+      <div class="field"><label>Annual Budget</label><input type="number" placeholder="65000"></div>
+      <div class="field full"><label>Job Description</label><textarea placeholder="Enter job responsibilities"></textarea></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div style="padding:14px;background:#F0F9FF;border-left:3px solid var(--blue);border-radius:8px;font-size:13px;">
+      <b>Approval Workflow:</b> <span style="color:var(--muted);">Request routes to Hiring Manager → Department Head → HR for approval.</span>
+    </div>
+  </div>`;
+
+// ---- Performance ----
+PAGES["performance-dash"] = ()=>`
+  ${header("Performance Mgmt.","Annual Performance Cycle Dashboard","Jun 1 - Dec 31 Automation: Jun 1 & Dec 31 to create & close cycles")}
+  ${cardsHTML([
+    {label:"Employees in Cycle",num:3,icon:"👥",bg:"var(--blue-bg)",fg:"var(--blue)",dir:"up",delta:"+3"},
+    {label:"Evaluations Completed",num:2,icon:"✔",bg:"var(--green-bg)",fg:"var(--green)",dir:"up",delta:"+2"},
+    {label:"In Progress",num:1,icon:"🔄",bg:"var(--orange-bg)",fg:"var(--orange)",dir:"down",delta:"-1"},
+    {label:"Avg P.C. Score",num:"3.9",icon:"⭐",bg:"var(--gold-bg)",fg:"var(--gold-icon)",dir:"up",delta:"+0.2"},
+  ])}
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Performance Criteria Evaluation (P.C.) - Annual Cycle</div></div>
+    <table>
+      <tr><th>Employee</th><th>P.C. 1 Score</th><th>P.C. 2 Score</th><th>Final Score</th><th>Status</th><th></th></tr>
+      <tr><td><b>Ahmed Hassan</b></td><td>3.5/5</td><td>3.8/5</td><td style="font-weight:700;color:var(--blue);">3.7/5</td><td><span class="pill green">Completed</span></td><td class="row-actions"><a onclick="go('performance-add')">View</a></td></tr>
+      <tr><td><b>Fatima Karim</b></td><td>4.2/5</td><td>4.1/5</td><td style="font-weight:700;color:var(--blue);">4.15/5</td><td><span class="pill green">Completed</span></td><td class="row-actions"><a onclick="go('performance-add')">View</a></td></tr>
+      <tr><td><b>Omar Saleh</b></td><td>3.9/5</td><td>—</td><td>—</td><td><span class="pill orange">In Progress</span></td><td class="row-actions"><a onclick="go('performance-add')">View</a></td></tr>
+    </table>
+  </div>`;
+
+PAGES["performance-list"] = ()=>`
+  ${header("Performance Mgmt.","Review Cycle","Annual Performance Evaluation using P.C. Framework",`<button class="btn btn-primary" onclick="go('performance-add')">+ New Evaluation</button>`)}
+  <div class="panel">
+    <div style="padding:14px;background:#FEF3C7;border-radius:8px;margin-bottom:16px;font-size:13px;line-height:1.6;">
+      <b>Performance Cycle Process:</b> Automation on Jun 1 and Dec 31 creates/closes evaluation items. Employees assigned to managers for P.C. 1 and P.C. 2 scoring. Managers submit evaluations which calculates final scores.
+    </div>
+    <table>
+      <tr><th>Employee</th><th>Department</th><th>P.C. 1</th><th>P.C. 2</th><th>Final Score</th><th>Status</th></tr>
+      <tr><td><b>Ahmed Hassan</b></td><td>Finance</td><td>3.5</td><td>3.8</td><td>3.7</td><td><span class="pill green">Completed</span></td></tr>
+      <tr><td><b>Fatima Karim</b></td><td>Technology</td><td>4.2</td><td>4.1</td><td>4.15</td><td><span class="pill green">Completed</span></td></tr>
+      <tr><td><b>Omar Saleh</b></td><td>Operations</td><td>3.9</td><td>—</td><td>—</td><td><span class="pill orange">In Progress</span></td></tr>
+    </table>
+  </div>`;
+
+PAGES["performance-add"] = ()=>`
+  ${header("Performance Mgmt.","Employee Performance Evaluation","Ahmed Hassan - Finance Manager",`<button class="btn btn-outline" onclick="go('performance-list')">Cancel</button><button class="btn btn-primary" onclick="go('performance-list')">Save Evaluation</button>`)}
+  <div class="panel">
+    <div class="profile-head">
+      <div class="profile-photo">${initials("Ahmed Hassan")}</div>
+      <div><div class="profile-name">Ahmed Hassan</div><div class="profile-role">Finance Manager · Finance Dept.</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Performance Criteria Scores</div>
+    <div class="info-grid">
+      <div class="info-item"><div class="k">P.C. 1 Score</div><div class="v" style="color:var(--green);font-size:18px;font-weight:700;">3.5/5</div></div>
+      <div class="info-item"><div class="k">P.C. 2 Score</div><div class="v" style="color:var(--green);font-size:18px;font-weight:700;">3.8/5</div></div>
+      <div class="info-item"><div class="k">Final Score</div><div class="v" style="color:var(--blue);font-size:18px;font-weight:700;">3.7/5</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="field"><label>P.C. 1 Score (1-5)</label><input type="number" min="1" max="5" step="0.1" value="3.5" placeholder="e.g. 3.5"></div>
+      <div class="field"><label>P.C. 2 Score (1-5)</label><input type="number" min="1" max="5" step="0.1" value="3.8" placeholder="e.g. 3.8"></div>
+      <div class="field full"><label>Manager Comments</label><textarea placeholder="Enter evaluation comments"></textarea></div>
+    </div>
+  </div>`;
+
+// ---- Training ----
+PAGES["training-list"] = ()=>`
+  ${header("Training Mgmt.","Training Dashboard","Track all training requests and submissions")}
+  ${cardsHTML([
+    {label:"Total Requests",num:3,icon:"📝",bg:"var(--blue-bg)",fg:"var(--blue)",dir:"up",delta:"+2"},
+    {label:"Approved",num:2,icon:"✔",bg:"var(--green-bg)",fg:"var(--green)",dir:"up",delta:"+1"},
+    {label:"Pending",num:1,icon:"⏳",bg:"var(--orange-bg)",fg:"var(--orange)",dir:"down",delta:"-1"},
+    {label:"Total Hours",num:"24",icon:"🕐",bg:"var(--pink-bg)",fg:"var(--pink)",dir:"up",delta:"+4"},
+  ])}
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Training Requests & Submissions</div></div>
+    <table>
+      <tr><th>Employee</th><th>Training Type</th><th>Dept.</th><th>Hours</th><th>Delivery Mode</th><th>Location</th><th>Status</th><th></th></tr>
+      <tr><td><b>Ahmed Hassan</b></td><td>Skills</td><td>Finance</td><td>8h</td><td><span class="pill blue">Online</span></td><td>Cairo</td><td><span class="pill green">Approved</span></td><td class="row-actions"><a onclick="go('training-detail')">View</a></td></tr>
+      <tr><td><b>Fatima Karim</b></td><td>Leadership</td><td>Technology</td><td>12h</td><td><span class="pill blue">Online</span></td><td>Cairo</td><td><span class="pill orange">Pending</span></td><td class="row-actions"><a onclick="go('training-detail')">View</a></td></tr>
+      <tr><td><b>Omar Saleh</b></td><td>Compliance</td><td>Operations</td><td>4h</td><td><span class="pill orange">Offline</span></td><td>Giza</td><td><span class="pill green">Approved</span></td><td class="row-actions"><a onclick="go('training-detail')">View</a></td></tr>
+    </table>
+  </div>`;
+
+PAGES["training-detail"] = ()=>`
+  ${header("Training Mgmt.","Training Request Details","Ahmed Hassan - Finance Skills Training",
+    `<button class="btn btn-outline" onclick="go('training-list')">← Back</button>
+     <button class="btn btn-primary">Edit</button>`)}
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Request Details</div>
+    <div class="info-grid">
+      <div class="info-item"><div class="k">Employee</div><div class="v">Ahmed Hassan</div></div>
+      <div class="info-item"><div class="k">Training Type</div><div class="v">Skills</div></div>
+      <div class="info-item"><div class="k">Department</div><div class="v">Finance</div></div>
+      <div class="info-item"><div class="k">Training Hours</div><div class="v">8 hours</div></div>
+      <div class="info-item"><div class="k">Delivery Mode</div><div class="v"><span class="pill blue">Online</span></div></div>
+      <div class="info-item"><div class="k">Location</div><div class="v">Cairo</div></div>
+      <div class="info-item"><div class="k">Status</div><div class="v"><span class="pill green">Approved</span></div></div>
+      <div class="info-item"><div class="k">Submitted By</div><div class="v">HR Manager</div></div>
+      <div class="info-item"><div class="k">Date Submitted</div><div class="v">15-Oct-2024</div></div>
+    </div>
+  </div>`;
+
+PAGES["training-add"] = ()=>`
+  ${header("Training Mgmt.","Submit Training Request","Request training for an employee",`<button class="btn btn-outline" onclick="go('training-list')">Cancel</button><button class="btn btn-primary" onclick="go('training-list')">Submit Request</button>`)}
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Training Request Details</div>
+    <div class="form-grid">
+      <div class="field"><label>Employee</label><select><option>Find items</option></select></div>
+      <div class="field"><label>Training Type</label><select><option>Skills</option><option>Leadership</option><option>Compliance</option><option>Technical</option></select></div>
+      <div class="field"><label>Department</label><select><option>Finance</option><option>Technology</option><option>Operations</option><option>Marketing</option></select></div>
+      <div class="field"><label>Training Hours</label><input type="number" placeholder="e.g. 8"></div>
+      <div class="field"><label>Delivery Mode</label><select><option>Online</option><option>Offline</option><option>Hybrid</option></select></div>
+      <div class="field"><label>Location</label><input placeholder="e.g. Cairo, Giza"></div>
+      <div class="field full"><label>Training Title & Description</label><textarea placeholder="Enter training details"></textarea></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div style="padding:14px;background:#F0F9FF;border-left:3px solid var(--blue);border-radius:8px;font-size:13px;">
+      <b>Submission Flow:</b> <span style="color:var(--muted);">Training request submitted to Employee/Manager for review and approval by HR.</span>
+    </div>
+  </div>`;
+
+// ---- Documents ----
+PAGES["documents-list"] = ()=>`
+  ${header("Company Documents","Policies & Procedures","Organization-wide policies, processes, and procedures documentation",
+    `<button class="btn btn-primary" onclick="go('documents-add')">+ Add Document</button>`)}
+  ${cardsHTML([
+    {label:"Total Documents",num:8,icon:"📋",bg:"var(--blue-bg)",fg:"var(--blue)",dir:"up",delta:"+2"},
+    {label:"Active Policies",num:6,icon:"✔",bg:"var(--green-bg)",fg:"var(--green)",dir:"up",delta:"+1"},
+    {label:"Under Review",num:1,icon:"🔄",bg:"var(--orange-bg)",fg:"var(--orange)",dir:"down",delta:"-1"},
+    {label:"Archived",num:1,icon:"📦",bg:"var(--gray-bg)",fg:"var(--muted)",dir:"up",delta:"0"},
+  ])}
+  <div class="panel">
+    <div class="filters"><input placeholder="Search policy..."><select><option>Filter by category</option><option>HR Policy</option><option>Operations</option><option>Compliance</option><option>Finance</option></select><select><option>Filter by status</option><option>Active</option><option>Under Review</option><option>Archived</option></select></div>
+    <table>
+      <tr><th>Document</th><th>Category</th><th>Last Updated</th><th>Status</th><th>Version</th><th></th></tr>
+      <tr><td><div class="avatar-name"><div class="doc-icon">DOC</div><b>Employee Code of Conduct</b></div></td><td><span class="pill blue">HR Policy</span></td><td>15-Aug-2024</td><td><span class="pill green">Active</span></td><td>v2.1</td><td class="row-actions"><a onclick="go('documents-detail')">View</a></td></tr>
+      <tr><td><div class="avatar-name"><div class="doc-icon">DOC</div><b>Leave Policy & Procedures</b></div></td><td><span class="pill blue">HR Policy</span></td><td>10-Aug-2024</td><td><span class="pill green">Active</span></td><td>v3.0</td><td class="row-actions"><a onclick="go('documents-detail')">View</a></td></tr>
+      <tr><td><div class="avatar-name"><div class="doc-icon">DOC</div><b>Data Security & Privacy Policy</b></div></td><td><span class="pill orange">Compliance</span></td><td>01-Aug-2024</td><td><span class="pill green">Active</span></td><td>v1.5</td><td class="row-actions"><a onclick="go('documents-detail')">View</a></td></tr>
+      <tr><td><div class="avatar-name"><div class="doc-icon">DOC</div><b>Recruitment & Hiring Procedures</b></div></td><td><span class="pill blue">HR Policy</span></td><td>25-Jul-2024</td><td><span class="pill green">Active</span></td><td>v2.0</td><td class="row-actions"><a onclick="go('documents-detail')">View</a></td></tr>
+      <tr><td><div class="avatar-name"><div class="doc-icon">DOC</div><b>Performance Management Policy</b></div></td><td><span class="pill blue">HR Policy</span></td><td>15-Jul-2024</td><td><span class="pill orange">Under Review</span></td><td>v2.3 (draft)</td><td class="row-actions"><a onclick="go('documents-detail')">View</a></td></tr>
+      <tr><td><div class="avatar-name"><div class="doc-icon">DOC</div><b>Training & Development Guidelines</b></div></td><td><span class="pill blue">HR Policy</span></td><td>01-Jul-2024</td><td><span class="pill green">Active</span></td><td>v1.8</td><td class="row-actions"><a onclick="go('documents-detail')">View</a></td></tr>
+    </table>
+  </div>`;
+
+PAGES["documents-detail"] = ()=>`
+  ${header("Company Documents / Policy","Employee Code of Conduct","HR Policy · Active · v2.1",
+    `<button class="btn btn-outline" onclick="go('documents-list')">← Back to List</button>
+     <button class="btn btn-primary">Download PDF</button>`)}
+  <div class="panel">
+    <div class="info-grid" style="margin-bottom:18px;">
+      <div class="info-item"><div class="k">Policy Name</div><div class="v">Employee Code of Conduct</div></div>
+      <div class="info-item"><div class="k">Category</div><div class="v"><span class="pill blue">HR Policy</span></div></div>
+      <div class="info-item"><div class="k">Status</div><div class="v"><span class="pill green">Active</span></div></div>
+      <div class="info-item"><div class="k">Current Version</div><div class="v">v2.1</div></div>
+      <div class="info-item"><div class="k">Last Updated</div><div class="v">15-Aug-2024</div></div>
+      <div class="info-item"><div class="k">Updated By</div><div class="v">HR Manager</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Policy Summary</div>
+    <div style="padding:14px;background:#F9FAFB;border-radius:8px;font-size:13px;line-height:1.8;color:var(--muted);">
+      This document outlines the standards of professional behavior and conduct expected from all employees. It covers topics including workplace harassment, discrimination, confidentiality, social media guidelines, and disciplinary procedures. All employees are required to read and acknowledge this policy annually.
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Key Sections</div>
+    <ul style="padding:0;margin:0;list-style:none;">
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">1. Workplace Conduct & Professionalism</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">2. Anti-Harassment & Discrimination Policy</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">3. Confidentiality & Data Protection</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">4. Social Media & Communication Guidelines</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--border);">5. Disciplinary & Grievance Procedures</li>
+    </ul>
+  </div>
+  <div class="panel">
+    <div class="upload-box" style="padding:40px;background:#F0F9FF;">📄 PDF Document Preview - Employee Code of Conduct v2.1</div>
+  </div>`;
+
+PAGES["documents-add"] = ()=>`
+  ${header("Company Documents","Add New Policy or Procedure","Upload and manage organization policies and procedures",`<button class="btn btn-outline" onclick="go('documents-list')">Cancel</button><button class="btn btn-primary" onclick="go('documents-list')">Upload Document</button>`)}
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:14px;">Document Details</div>
+    <div class="form-grid">
+      <div class="field"><label>Document Title</label><input placeholder="e.g. Employee Code of Conduct"></div>
+      <div class="field"><label>Category</label><select><option>HR Policy</option><option>Operations</option><option>Compliance</option><option>Finance</option><option>Health & Safety</option></select></div>
+      <div class="field"><label>Version Number</label><input placeholder="e.g. v1.0" value="v1.0"></div>
+      <div class="field"><label>Status</label><select><option>Active</option><option>Under Review</option><option>Draft</option><option>Archived</option></select></div>
+      <div class="field"><label>Effective Date</label><input type="date"></div>
+      <div class="field"><label>Next Review Date</label><input type="date"></div>
+      <div class="field full"><label>Policy Summary / Description</label><textarea placeholder="Provide a brief overview of the policy or procedure"></textarea></div>
+      <div class="field full"><label>Key Points / Sections</label><textarea placeholder="Outline the main sections or points covered in this document"></textarea></div>
+      <div class="field full"><label>Document File</label><div class="upload-box">No file attached. <b>+ Upload PDF or Word Document</b></div></div>
+    </div>
+  </div>`;
+
+// ---- Global Dashboard ----
+PAGES.dashboard = ()=>`
+  ${header("Dashboard","Company-wide HR Dashboard","Live snapshot across all modules (concept only).")}
+  ${cardsHTML([
+    {label:"Headcount",num:employees.length,icon:"👤",bg:"var(--blue-bg)",fg:"var(--blue)",dir:"up",delta:"+2"},
+    {label:"Attrition (YTD)",num:"3.1%",icon:"📉",bg:"var(--red-bg)",fg:"var(--red)",dir:"down",delta:"-0.4%"},
+    {label:"Avg Performance Score",num:"4.2",icon:"★",bg:"var(--gold-bg)",fg:"var(--gold-icon)",dir:"up",delta:"+0.3"},
+    {label:"Training Completion",num:"78%",icon:"🎓",bg:"var(--green-bg)",fg:"var(--green)",dir:"up",delta:"+6%"},
+  ])}
+  <div class="panel">
+    <div class="panel-title" style="margin-bottom:10px;">Headcount by Department</div>
+    ${["Technology","Finance","Human Resources","Operations","Marketing"].map((d,i)=>`
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <div style="width:150px;font-size:13px;">${d}</div>
+        <div class="progress-bar" style="flex:1;"><div style="width:${[70,40,25,55,30][i]}%"></div></div>
+        <div style="width:30px;font-size:12.5px;color:var(--muted);text-align:right;">${[14,8,5,11,6][i]}</div>
+      </div>`).join("")}
+  </div>`;
+
+render();
+</script>
+</body>
+</html>
